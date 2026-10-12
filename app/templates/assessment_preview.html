@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Assessment Preview{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h1 class="mb-4 text-primary">Assessment Preview</h1>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">Parameters & Connection</h5>
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+          <tr><th class="w-25">Server Name / IP</th><td>{{ server_ip }}</td></tr>
+          <tr><th>Port</th><td>{{ port }}</td></tr>
+          <tr><th>Service Name</th><td>{{ service_name }}</td></tr>
+          <tr><th>User Name</th><td>{{ oracle_user }}</td></tr>
+          <tr>
+            <th>Connection Status</th>
+            <td class="{{ 'text-success' if connection_status=='SUCCESS' else 'text-danger' }}">
+              <strong>{{ connection_status }}</strong>
+            </td>
+          </tr>
+          <tr><th>Report File</th><td>{{ report_filename }}</td></tr>
+        </table>
+      </div>
+
+      <div class="d-flex gap-2 mt-3">
+        <a href="{{ url_for('run_assessment') }}" class="btn btn-secondary">
+          Back
+        </a>
+        <form method="POST" action="{{ url_for('run_assessment') }}">
+          <input type="hidden" name="server_ip" value="{{ server_ip }}">
+          <input type="hidden" name="port" value="{{ port }}">
+          <input type="hidden" name="service_name" value="{{ service_name }}">
+          <input type="hidden" name="oracle_user" value="{{ oracle_user }}">
+          <input type="hidden" name="oracle_password" value="{{ oracle_password }}">
+          <input type="hidden" name="report_filename" value="{{ report_filename }}">
+          <!-- dry_run yok => gerçek çalıştırma -->
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-play-circle me-2"></i>Run Full Assessment
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

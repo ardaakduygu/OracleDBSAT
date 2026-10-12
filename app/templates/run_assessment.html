@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Run Assessment{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h1 class="mb-4 text-primary">Run Oracle Security Assessment</h1>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">Target Database Parameters</h5>
+
+      <form method="POST" action="{{ url_for('run_assessment') }}">
+
+        <!-- Server Name / IP -->
+        <div class="mb-3">
+          <label for="server_ip" class="form-label">Server Name / IP</label>
+          <input type="text" class="form-control" id="server_ip" name="server_ip" required
+                 placeholder="e.g., 192.168.1.10 or db_server_name">
+        </div>
+
+        <!-- Port -->
+        <div class="mb-3">
+          <label for="port" class="form-label">Port</label>
+          <input type="number" class="form-control" id="port" name="port" value="1521" required>
+        </div>
+
+        <!-- Service Name -->
+        <div class="mb-3">
+          <label for="service_name" class="form-label">Service Name</label>
+          <input type="text" class="form-control" id="service_name" name="service_name" required
+                 placeholder="e.g., ORCL or PDB1">
+        </div>
+
+        <!-- Oracle Credentials -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="oracle_user" class="form-label">Oracle User</label>
+            <input type="text" class="form-control" id="oracle_user" name="oracle_user" required
+                   placeholder="e.g., SYSTEM">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="oracle_password" class="form-label">Oracle Password</label>
+            <input type="password" class="form-control" id="oracle_password" name="oracle_password" required>
+          </div>
+        </div>
+
+        <!-- Report File Name (Defaulted) -->
+        <div class="mb-3">
+          <label for="report_filename" class="form-label">Report File Name</label>
+          <input type="text" class="form-control" id="report_filename" name="report_filename"
+                 value="{{ default_report_name }}" required>
+          <div class="form-text">Rapor 'reports' klasörüne kaydedilecek.</div>
+        </div>
+
+        <!-- Mode: Only test connection? -->
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" value="1" id="dry_run" name="dry_run">
+          <label class="form-check-label" for="dry_run">
+            Only test the Oracle connection and show the parameters (don’t run tests)
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">
+          <i class="fas fa-play-circle me-2"></i>Run Assessment
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

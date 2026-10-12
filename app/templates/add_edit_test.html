@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}{{ action }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-primary">{{ action }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="POST" action="{% if test and test.Id %}{{ url_for('edit_test', test_id=test.Id) }}{% else %}{{ url_for('add_test') }}{% endif %}">
+
+                <div class="mb-3">
+                    <label for="Name" class="form-label">Test Name</label>
+                    <input type="text" class="form-control" id="Name" name="Name" value="{{ test.Name if test else '' }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Severity" class="form-label">Severity</label>
+
+                    {# Backward-compatible mapping for old values (Major/Minor) #}
+                    {% set raw_sev = test.Severity if test else '' %}
+                    {% set current_severity =
+                        'High' if raw_sev == 'Major' else
+                        'Medium' if raw_sev == 'Minor' else
+                        raw_sev
+                    %}
+
+                    <select class="form-select" id="Severity" name="Severity" required>
+                        <option value="">Select Severity</option>
+                        <option value="Critical" {% if current_severity == 'Critical' %}selected{% endif %}>Critical</option>
+                        <option value="High" {% if current_severity == 'High' %}selected{% endif %}>High</option>
+                        <option value="Medium" {% if current_severity == 'Medium' %}selected{% endif %}>Medium</option>
+                        <option value="Low" {% if current_severity == 'Low' %}selected{% endif %}>Low</option>
+                    </select>
+
+                    {% if raw_sev in ['Major','Minor'] %}
+                        <div class="form-text">
+                            Legacy severity detected ({{ raw_sev }}). It will be saved as {{ current_severity }} after update.
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="Status" class="form-label">Status</label>
+                    {% set current_status = test.Status if test else 'Enable' %}
+                    <select class="form-select" id="Status" name="Status" required>
+                        <option value="Enable" {% if current_status == 'Enable' %}selected{% endif %}>Enable</option>
+                        <option value="Disable" {% if current_status == 'Disable' %}selected{% endif %}>Disable</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Description" class="form-label">Description</label>
+                    <textarea class="form-control" id="Description" name="Description" rows="3">{{ test.Description if test else '' }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="SQL_Test" class="form-label">SQL Test (Mandatory)</label>
+                    <textarea class="form-control" id="SQL_Test" name="SQL_Test" rows="3" required>{{ test.SQL_Test if test else '' }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="SQL_Detail" class="form-label">SQL Detail</label>
+                    <textarea class="form-control" id="SQL_Detail" name="SQL_Detail" rows="3">{{ test.SQL_Detail if test else '' }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Text_Pass" class="form-label">Text Pass</label>
+                    <textarea class="form-control" id="Text_Pass" name="Text_Pass" rows="3">{{ test.Text_Pass if test else '' }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Text_Fail" class="form-label">Text Fail</label>
+                    <textarea class="form-control" id="Text_Fail" name="Text_Fail" rows="3">{{ test.Text_Fail if test else '' }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Notes" class="form-label">Notes</label>
+                    <textarea class="form-control" id="Notes" name="Notes" rows="3">{{ test.Notes if test else '' }}</textarea>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-save me-2"></i>{% if test and test.Id %}Update Test{% else %}Save New Test{% endif %}
+                    </button>
+                    <a href="{{ url_for('configure_assessment') }}" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
